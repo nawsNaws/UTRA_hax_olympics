@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nutri-Vision Agent</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: auto; text-align: center; background: #fdfdfd; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background: white; }
+        #result { margin-top: 20px; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; white-space: pre-wrap; }
+        .loading { display: none; color: #4285f4; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🍏 Nutri-Vision Agent</h1>
+    <div class="card">
+        <p>Upload a photo of any food ingredient label to see the truth.</p>
+        <input type="file" id="fileInput" accept="image/*">
+        <br><br>
+        <button onclick="uploadImage()" style="padding: 10px 20px; cursor: pointer;">Scan Ingredients</button>
+        <div id="loader" class="loading">🔍 AI is auditing the chemicals...</div>
+    </div>
+
+    <div id="result"></div>
+
+   <div id="gradeDisplay" style="font-size: 48px; font-weight: bold; margin: 10px;"></div>
+<table id="nutritionTable" style="width:100%; display:none; border-collapse: collapse;">
+    <thead>
+        <tr style="background:#eee;">
+            <th>Ingredient</th>
+            <th>Type</th>
+            <th>Explanation</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+async function uploadImage() {
+    // ... (keep fetch logic from before)
+    const data = await response.json();
+    
+    // 1. Show the Grade
+    const grade = document.getElementById('gradeDisplay');
+    grade.innerText = data.health_grade;
+    grade.style.color = (data.health_grade.startsWith('A') || data.health_grade.startsWith('B')) ? 'green' : 'red';
+
+    // 2. Build the Table
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = ''; // Clear previous
+    
+    data.analysis.forEach(item => {
+        const row = `
+            <tr style="background: ${item.type === 'Risk' ? '#ffebee' : '#e8f5e9'}">
+                <td>${item.ingredient}</td>
+                <td><b>${item.type}</b></td>
+                <td>${item.reason}</td>
+            </tr>`;
+        tbody.innerHTML += row;
+    });
+
+    document.getElementById('nutritionTable').style.display = 'table';
+}
+</script>
+</body>
+</html>
