@@ -1,4 +1,4 @@
-// HC-SR04 Ultrasonic Sensor with Arduino
+// Ultrasonic Sensor with Arduino
 // Measures distance in centimeters and inches
 
 // Pin configuration
@@ -36,19 +36,15 @@ void loop() {
   if (duration == 0) {
     Serial.println("Out of range or no object detected");
   } else {
-    // Calculate distance in cm and inches
+    // Calculate distance in cm
     distanceCm = (duration * SOUND_SPEED) / 2.0;
-    distanceInch = distanceCm / 2.54;
 
-    // Display results
+    // Display results rounded to 2 decimal points
     Serial.println(distanceCm, 2);
   }
 
   // Turn on LED if object is less than 20cm away
   if (distanceCm<20){
-    digitalWrite(lightPin, HIGH);
-  }else{
-    digitalWrite(lightPin, LOW);
-  } 
+    //turn around the obstacle
   delay(500); // Wait before next measurement
 }
