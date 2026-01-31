@@ -1,24 +1,36 @@
-require('dotenv').config();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+// ... (previous setup code)
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-async function runFactCheck(text) {
-  // Use the 2026 stable model
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  
-  const prompt = `Fact-check this: "${text}". Give a Trust Score (0-100) and a short reason.`;
-
-  console.log("🔍 Checking with Gemini 3...");
+app.post('/audit', upload.single('productImage'), async (req, res) => {
   try {
-    const result = await model.generateContent(prompt);
-    console.log("\n--- RESULT ---\n", result.response.text());
-  } catch (err) {
-    console.error("❌ API Error:", err.message);
-  } finally {
-    // This stops the "Assertion failed" error on Windows
-    process.exit(0);
-  }
-}
+    const filePath = req.file.path;
+    // Using Gemini 3 Flash for the fastest multimodal processing
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-3-flash",
+        generationConfig: { responseMimeType: "application/json" } 
+    });
 
-runFactCheck("The first person to walk on the sun was Neil Armstrong in 1923.");
+    const imageData = {
+      inlineData: {
+        data: Buffer.from(fs.readFileSync(filePath)).toString("base64"),
+        mimeType: req.file.mimetype
+      }
+    };
+
+    const prompt = `
+      Analyze this food label. Return a JSON object with this exact structure:
+      {
+        "health_grade": "A-F",
+        "summary": "one sentence summary",
+        "analysis": [
+          {"ingredient": "name", "type": "Benefit/Risk", "reason": "why"}
+        ]
+      }
+    `;
+
+    const result = await model.generateContent([prompt, imageData]);
+    res.json(JSON.parse(result.response.text())); // Send the raw JSON to the frontend
+    fs.unlinkSync(filePath);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
