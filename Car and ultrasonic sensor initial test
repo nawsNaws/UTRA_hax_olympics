@@ -1,0 +1,82 @@
+#include <Servo.h>
+
+// Ultrasonic Pins
+const int trigPin = 11;
+const int echoPin = 12;
+
+// Motor Driver Pins
+const int motorL1 = 5; 
+const int motorL2 = 6; 
+const int motorR1 = 9; 
+const int motorR2 = 10; 
+
+// Servo Setup
+Servo claw;
+const int clawPin = 3;
+int openAngle = 70;
+int closedAngle = 145; // Adjust based on your grip test
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  
+  pinMode(motorL1, OUTPUT);
+  pinMode(motorL2, OUTPUT);
+  pinMode(motorR1, OUTPUT);
+  pinMode(motorR2, OUTPUT);
+
+  claw.attach(clawPin);
+  claw.write(openAngle);
+  
+  Serial.begin(9600); // For debugging via USB
+}
+
+void loop() {
+  long duration;
+  int distance;
+
+  // 1. Get Distance Reading
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2; // Convert time to cm
+
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  // 2. Logic: Drive until 15cm away
+  if (distance > 15 || distance == 0) { // '0' often means out of range
+    driveForward();
+  } 
+  else {
+    stopMotors();
+    delay(500);         // Let the robot settle
+    pickUpBox();
+    while(true);        // Stop everything after picking up
+  }
+  
+  delay(50); // Small delay to prevent sensor "noise"
+}
+
+void driveForward() {
+  digitalWrite(motorL1, HIGH);
+  digitalWrite(motorL2, LOW);
+  digitalWrite(motorR1, HIGH);
+  digitalWrite(motorR2, LOW);
+}
+
+void stopMotors() {
+  digitalWrite(motorL1, LOW);
+  digitalWrite(motorL2, LOW);
+  digitalWrite(motorR1, LOW);
+  digitalWrite(motorR2, LOW);
+}
+
+void pickUpBox() {
+  claw.write(closedAngle);
+  delay(1000);
+}
