@@ -300,7 +300,7 @@ void stopMotors() {
 
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  if (blueCounter == 0 || blueCounter == 3){
+  if (blueCounter == 0){
     turnRight(); 
     moveBackwards(); 
     delay(100); 
@@ -316,7 +316,7 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
 }
 
 void boxLower(){
-  if (blueCounter == 1 || blueCounter == 4){
+  if (blueCounter == 1){
     turnLeft(); 
     moveBackwards(); 
     delay(100); 
@@ -359,8 +359,8 @@ void redRoad(){
 }
 
 void evadeObstacle(){
-  turnRight(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
-  
+  turnLeft(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
+
 
 }
 
