@@ -8,6 +8,8 @@
 // const int in3 = 8;
 // const int in4 = 9;
 
+int robotState = 0; 
+// 0: Start, 1: Green Found, 2: On Ramp, 3: Finished
 
 //SERVOS: 
 #include <Servo.h>
@@ -210,25 +212,40 @@ void raiseClaw() {
   //then we reupload 
 
 void loop() {
+
+  switch (robotState) {
+    case 0: // Normal Black Track
+      moveForwards();
+      if (color == 2) { // Green detected
+        robotState = 1;
+         // turn right 45
+        turnRight();
+        delay(1350);
+        stopMotors();
+      }
+      break;
+
+    case 1: // Turning onto Green/Finding next Black
+      moveForwards());
+      if (color == 5):
+        robotState = 3; 
+      break;
+
+    case 2: // On Ramp
+      moveForwards(); 
+      if (color == 2) { // Red detected
+        robotState = 3;
+      }
+      break;
+
+    case 3: // Finish
+      stopMotors();
+      Serial.println("Goal Reached!");
+      while(1); // Permanent stop
+      break;
+  }
+}
   // moveForward();
-  if (colour != 5){
-    //turn right 45
-    turnRight();
-    delay(1350);
-    stopMotors();
-  }
-  if (colour == 5){
-    //black
-    moveForward();
-  }
-
-  if (colour==2){
-    //red
-    delay(1000)
-    stopMotors();
-  }
-
-  //COLOURS
   getColours(); 
   if (red<= 15 && green <= 15 && blue <= 15){ 
     Serial.println("white"); 
@@ -291,3 +308,15 @@ void loop() {
       pos = 0; // claw is now in a raised position
   }
   }
+  
+void find_ball_and_wall(){
+  // spins the robot to face the wall
+  while distanceCm<40 or distanceCm>50:
+    turnRight();
+  else:
+    stopMotors();
+
+  moveForward();
+  delay(1000);
+  //UPDATE WITH CORRECT TIME to push ball to correct space
+}
