@@ -1,0 +1,56 @@
+#include <Servo.h>
+
+Servo myServo; //make servo obj
+
+int pos = 0;
+
+char incomingByte; // for incoming serial data, should be if the car has detected a item/obsticle
+
+//----------------------------------------------
+//define functions
+//----------------------------------------------
+//lowers the claw
+void lower_claw() {
+  for (int angle = 0; angle <= 90; angle++) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+
+//raises the claw
+void raise_claw() {
+  for (int angle = 90; angle >= 0; angle--) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+//----------------------------------------------
+
+void setup() {
+  // setup code
+  myServo.attach(9); // servo motor is pin 9
+  myServo.write(0); // set the start at angle 0
+
+  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+}
+
+//infinite loop
+void loop() {
+  
+  
+  if (Serial.available()) { // if a signal is sent to lower or raise the claw
+    incomingByte = Serial.read(); // get the data
+
+    if (incomingByte == '1' && pos == 0) { // if the claw is up
+      lower_claw(); //lower the claw
+      pos = 1; // claw is now in a lowered position
+    }
+
+
+    else if (incomingByte == '0' && pos == 1) {
+      raise_claw(); //raise the claw
+      pos = 0; // claw is now in a raised position
+    }
+  }
+}
+
