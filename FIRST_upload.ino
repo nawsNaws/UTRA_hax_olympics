@@ -269,7 +269,7 @@ void loop() {
   else if (red < blue && red <= green && red < 23){
     Serial.println("red"); 
     colour = 2; 
-  }else if (blue < green && blue < red && blue < 20){
+  }else if (blue < green && blue < red && blue < 30){
     Serial.println("blue"); 
     colour = 3; 
     boxPickUp(); 
