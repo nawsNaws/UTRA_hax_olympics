@@ -31,6 +31,7 @@ int blue = 0;
 int green = 0;
 int colour = 0; //--> different colours rep different numbers
 int blueCounter = 0; 
+int redCounter = 0; 
 
 
 int in1 = 0, in2 = 1;
@@ -166,6 +167,7 @@ void loop() {
 
   else if (red < blue && red <= green && red < 23){
     Serial.println("red"); 
+    redRoad(); 
     colour = 2; 
   }
 
@@ -173,12 +175,16 @@ void loop() {
     Serial.println("blue"); 
     colour = 3; 
     blueTape1(); 
-    blueTape2();  
+    blueTape2();
+    if (blueCounter = 2){
+      blueCounter++; 
+    }
   } 
     
   else if (green < red  && green - blue <= 8){
     Serial.println("green"); 
     colour = 4; 
+    
     }
   
   else {
@@ -309,13 +315,9 @@ void stopMotors() {
   digitalWrite(motorR2, LOW);
 }
 
-void pickUpBox() {
-  claw.write(closedAngle);
-  delay(1000);
-}
 
-void blueTape1(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  if (blueCounter = 0){
+void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
+  if (blueCounter = 0 || blueCounter = 3){
     turnRight(); 
     moveBackwards(); 
     delay(100); 
@@ -326,17 +328,28 @@ void blueTape1(){ //set int counter to 0 at beginning --> once this code works i
     raise_claw();
     turnLeft(); 
     moveForward();  
-
+    blueCounter++; 
   }
 }
 
-void blueTape2(){
+void boxLower(){
+  if (blueCounter = 1 || blueCounter = 4){
+    turnLeft(); 
+    moveBackwards(); 
+    delay(100); 
+    moveForwards(); 
+    delay(100); 
+    stopMotors(); 
+    //test if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
+    lower_claw();
+    moveBackwards(); 
+    delay(100); 
+    turnRight(); 
+    moveForward();  
+    blueCounter++;
+  }
 
 }
-
-//turn right 
-//potentially move back a bit 
-//collect box 
 
 //lowers the claw
 void lower_claw() {
@@ -354,9 +367,11 @@ void raise_claw() {
   }
 }
 
-
-
-
-
-
+void redRoad(){
+  if (redCounter = 0){
+    turnRight(); //its not a complete right angle from the green road to the red one tho so subject to change 
+    redCounter = 1; 
+  }
+  moveForward(); 
+}
 
