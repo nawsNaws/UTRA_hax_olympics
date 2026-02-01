@@ -29,7 +29,7 @@ int green = 0;
 int colour = 0; //--> different colours rep different numbers
 int blueCounter = 0; 
 int redCounter = 0; 
-int section = "green1"
+int section = 0
 
 
 int in1 = 0, in2 = 1;
@@ -110,7 +110,7 @@ void loop() {
   if (leftState == LOW && rightState == LOW) {
     // moveForward();
     Serial.println("forwards");
-    if section == "green2":
+    if section == 1:
       //if robot is on black square of target
       if colour==5:
         stopMotors();
@@ -282,7 +282,7 @@ void stopMotors() {
 
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  section = "green2"
+  section = 1
   if (blueCounter == 0){
     // move back
     moveBackwards();
