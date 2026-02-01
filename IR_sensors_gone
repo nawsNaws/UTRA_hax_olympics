@@ -93,8 +93,8 @@ void moveForward(){
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
 
-  analogWrite(ENA, 200);
-  analogWrite(ENB, 200);
+  analogWrite(ENA, 100);
+  analogWrite(ENB, 100);
 }
 
 void turnLeft(){
@@ -174,12 +174,12 @@ void boxLower(){
   lowerClaw();
   // move out of the box
   moveBackwards(); 
-  delay(50); 
+  delay(300); 
   raiseClaw();
   stopMotors();
   //turn right 90
   turnRight();
-  delay(2700);
+  delay(1300);
   stopMotors();
 }
 
@@ -201,7 +201,6 @@ void raiseClaw() {
   //then we reupload 
 
 void loop() {
-
   switch (robotState) {
     case 0: // Normal Black Track
       moveForward();
