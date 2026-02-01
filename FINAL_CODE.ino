@@ -177,7 +177,7 @@ void loop() {
 
 //ULTRASONIC SENSOR: 
   long duration;
-  float distanceCm, distanceInch;
+  float distanceCm
   // Clear the trigger pin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -196,7 +196,7 @@ void loop() {
     // Display results rounded to 2 decimal points
     Serial.println(distanceCm, 2);
   }
-  // Turn on LED if object is less than 20cm away
+  // Evades object if less than 20cm away
   if (distanceCm<20){
     evadeObstacle(); 
   delay(500); // Wait before next measurement
@@ -315,18 +315,21 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
 
 void boxLower(){
   if (blueCounter == 1){
-    turnLeft(); 
+    // turn left 90
+    turnLeft();
+    delay(2700);
+    stopMotors();  
+    //lower box
+    lowerClaw();
+    // move out of the box
     moveBackwards(); 
     delay(100); 
-    moveForward(); 
-    delay(100); 
-    stopMotors(); 
+    stopMotors();
+    //turn right 90
+    turnRight()
+    delay(2700);
+    stopMotors();
     //test if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
-    lower_claw();
-    moveBackwards(); 
-    delay(100); 
-    turnRight(); 
-    moveForward();  
     blueCounter++;
   }
 
