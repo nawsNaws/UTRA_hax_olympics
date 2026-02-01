@@ -110,7 +110,12 @@ void loop() {
   if (leftState == LOW && rightState == LOW) {
     // moveForward();
     Serial.println("forwards");
-    moveForward(); 
+    if section == "green2":
+      //if robot is on black square of target
+      if colour==5:
+        stopMotors();
+    else:
+      moveForward(); 
   } 
     //if the colour is not green and the right IR sensor is sensing
   else if (colour!=4 && leftState == LOW && rightState == HIGH) {
