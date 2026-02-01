@@ -172,6 +172,8 @@ void loop() {
   else if (blue < green && blue < red && blue < 20){
     Serial.println("blue"); 
     colour = 3; 
+    blueTape1(); 
+    blueTape2();  
   } 
     
   else if (green < red  && green - blue <= 8){
@@ -185,8 +187,6 @@ void loop() {
   }
   delay (2000); 
 
-  blueTape1(); 
-  blueTape2();    
 
 //ULTRASONIC SENSOR: 
   long duration;
@@ -322,13 +322,17 @@ void pickUpBox() {
 }
 
 void blueTape1(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  if (colour = 3 && blueCounter = 0){
+  if (blueCounter = 0){
     turnRight(); 
     moveBackwards(); 
     delay(100); 
-    moveForward(); 
-
-
+    moveForwards(); 
+    delay(100); 
+    stopMotors(); 
+    //check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
+    raise_claw();
+    turnLeft(); 
+    moveForward();  
 
   }
 }
