@@ -28,7 +28,7 @@ void raise_claw() {
 
 void setup() {
   // setup code
-  myServo.attach(9); // servo motor is pin 9
+  myServo.attach(A2); // servo motor is pin 9
   myServo.write(0); // set the start at angle 0
 
   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
@@ -53,4 +53,3 @@ void loop() {
     }
   }
 }
-
