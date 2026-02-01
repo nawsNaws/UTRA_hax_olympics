@@ -174,6 +174,15 @@ void loop() {
   }
   delay (2000); 
 
+  // if the colour is black, find the wall and move the ball
+  if colour == 5{
+    find_ball_and_wall()
+  }
+  // if the colour is blue, pick up ball
+  if colour == 3{
+    boxPickUp()
+    boxLower()
+  }
 
 //ULTRASONIC SENSOR: 
   long duration;
@@ -276,7 +285,6 @@ void moveBackwards(){
 
   analogWrite(ENA, 200);
   analogWrite(ENB, 200);
-  
 }
 
 void stopMotors() {
@@ -332,7 +340,6 @@ void boxLower(){
     //test if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
     blueCounter++;
   }
-
 }
 
 //lowers the claw
@@ -374,11 +381,3 @@ void find_ball_and_wall(){
   delay(1000);
   //UPDATE WITH CORRECT TIME to push ball to correct space
 }
-
-void move_off_target():
-//while off green, move back 
-  while colour!= 4:
-    moveBackwards();
-  //then we reupload 
-
-
