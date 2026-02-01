@@ -360,8 +360,24 @@ void redRoad(){
 
 void evadeObstacle(){
   turnLeft(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
-
-
 }
+
+void find_ball_and_wall(){
+  // spins the robot to face the wall
+  while distanceCm<40 or distanceCm>50:
+    turnRight();
+  else:
+    stopMotors();
+
+  moveForward();
+  delay(1000);
+  //UPDATE WITH CORRECT TIME to push ball to correct space
+}
+
+void move_off_target():
+//while off green, move back 
+  while colour!= 4:
+    moveBackwards();
+  //then we reupload 
 
 
