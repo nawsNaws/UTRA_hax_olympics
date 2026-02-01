@@ -47,29 +47,11 @@ int wheelDirection = 0;
 // Measures distance in centimeters and inches
 
 // Pin configuration
-const int trigPin = 9;  // Trigger pin
-const int echoPin = 10; // Echo pin
-const int lightPin = 8; // LED pin
+const int trigPin = 5;  // Trigger pin
+const int echoPin = 4; // Echo pin
 
 // Speed of sound in cm/µs
 const float SOUND_SPEED = 0.0343; // cm per microsecond
-
-
-// Ultrasonic Pins
-const int trigPin = 11;
-const int echoPin = 12;
-
-// Motor Driver Pins
-const int motorL1 = 5; 
-const int motorL2 = 6; 
-const int motorR1 = 9; 
-const int motorR2 = 10; 
-
-// Servo Setup
-Servo claw;
-const int clawPin = 3;
-int openAngle = 70;
-int closedAngle = 145; // Adjust based on your grip test
 
 
 
@@ -85,14 +67,13 @@ void setup() {
   myServo.attach(A2); // servo motor is pin 9
   myServo.write(0); // set the start at angle 0
 
-  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
-
+  
   
 //ULTRASONIC SENSOR:
 
+  
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-  pinMode(lightPin, OUTPUT);
 
 
 
@@ -174,8 +155,8 @@ void loop() {
   else if (blue < green && blue < red && blue < 20){
     Serial.println("blue"); 
     colour = 3; 
-    blueTape1(); 
-    blueTape2();
+    boxPickUp(); 
+    boxLower();
     if (blueCounter = 2){
       blueCounter++; 
     }
@@ -225,23 +206,24 @@ void loop() {
   if (distanceCm<20){
     //turn around the obstacle
   delay(500); // Wait before next measurement
-
+  }
+  
   //CLAW:
 
-   if (Serial.available()) { // if a signal is sent to lower or raise the claw
+  if (Serial.available()) { // if a signal is sent to lower or raise the claw
     incomingByte = Serial.read(); // get the data
 
     if (incomingByte == '1' && pos == 0) { // if the claw is up
       lower_claw(); //lower the claw
       pos = 1; // claw is now in a lowered position
     }
+  }
 
 
     else if (incomingByte == '0' && pos == 1) {
       raise_claw(); //raise the claw
       pos = 0; // claw is now in a raised position
     }
-  }
 }
 
 void getColours() {
@@ -265,7 +247,7 @@ void moveForward(){
   digitalWrite(in2, LOW);
 
   digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW;
+  digitalWrite(in4, LOW);
 
   analogWrite(ENA, 200);
   analogWrite(ENB, 200);
@@ -299,7 +281,7 @@ void moveBackwards(){
   digitalWrite(in2, HIGH);
 
   digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH;
+  digitalWrite(in4, HIGH);
 
   analogWrite(ENA, 200);
   analogWrite(ENB, 200);
@@ -309,19 +291,20 @@ void moveBackwards(){
 
 
 void stopMotors() {
-  digitalWrite(motorL1, LOW);
-  digitalWrite(motorL2, LOW);
-  digitalWrite(motorR1, LOW);
-  digitalWrite(motorR2, LOW);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
 }
 
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  if (blueCounter = 0 || blueCounter = 3){
+  if (blueCounter == 0 || blueCounter == 3){
     turnRight(); 
     moveBackwards(); 
     delay(100); 
-    moveForwards(); 
+    moveForward(); 
     delay(100); 
     stopMotors(); 
     //check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
@@ -333,11 +316,11 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
 }
 
 void boxLower(){
-  if (blueCounter = 1 || blueCounter = 4){
+  if (blueCounter == 1 || blueCounter == 4){
     turnLeft(); 
     moveBackwards(); 
     delay(100); 
-    moveForwards(); 
+    moveForward(); 
     delay(100); 
     stopMotors(); 
     //test if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
@@ -374,4 +357,5 @@ void redRoad(){
   }
   moveForward(); 
 }
+
 
