@@ -138,20 +138,23 @@ void loop() {
     Serial.println("left");
     turnLeft(); 
   } 
+  // RIGHT SIDE
+  else{
+    //FIRST UPLOAD! TURN RIGHT TO GREEN TRACK AT Y
+    turnRight();
+  }
 
+  //COLOURS
   getColours(); 
-  
   if (red<= 15 && green <= 15 && blue <= 15){ 
     Serial.println("white"); 
     colour = 1; 
   } 
-
   else if (red < blue && red <= green && red < 23){
     Serial.println("red"); 
     redRoad(); 
     colour = 2; 
   }
-
   else if (blue < green && blue < red && blue < 20){
     Serial.println("blue"); 
     colour = 3; 
@@ -161,13 +164,10 @@ void loop() {
       blueCounter++; 
     }
   } 
-    
   else if (green < red  && green - blue <= 8){
     Serial.println("green"); 
     colour = 4; 
-    
     }
-  
   else {
     Serial.println("other"); 
     colour = 5; 
@@ -178,38 +178,31 @@ void loop() {
 //ULTRASONIC SENSOR: 
   long duration;
   float distanceCm, distanceInch;
-
   // Clear the trigger pin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-
   // Send a 10µs HIGH pulse to trigger the sensor
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-
   // Read the echo pin (timeout after 25ms = ~4 meters)
   duration = pulseIn(echoPin, HIGH, 25000UL);
-
   // If no echo is received (timeout), skip calculation
   if (duration == 0) {
     Serial.println("Out of range or no object detected");
   } else {
     // Calculate distance in cm
     distanceCm = (duration * SOUND_SPEED) / 2.0;
-
     // Display results rounded to 2 decimal points
     Serial.println(distanceCm, 2);
   }
-
   // Turn on LED if object is less than 20cm away
   if (distanceCm<20){
     evadeObstacle(); 
   delay(500); // Wait before next measurement
   }
-  
-  //CLAW:
 
+  //CLAW:
   if (Serial.available()) { // if a signal is sent to lower or raise the claw
     incomingByte = Serial.read(); // get the data
 
@@ -219,7 +212,6 @@ void loop() {
     }
   }
 
-
     else if (incomingByte == '0' && pos == 1) {
       raise_claw(); //raise the claw
       pos = 0; // claw is now in a raised position
@@ -227,7 +219,6 @@ void loop() {
 }
 
 void getColours() {
-
   //s2 low and s3 low signifies red 
   digitalWrite(s2, LOW);
   digitalWrite(s3, LOW);
@@ -242,6 +233,7 @@ void getColours() {
 }
 
 
+//WHEELS AND MOVEMENT OF VEHICLE
 void moveForward(){
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -251,7 +243,6 @@ void moveForward(){
 
   analogWrite(ENA, 200);
   analogWrite(ENB, 200);
-
 }
 
 void turnRight(){
@@ -288,8 +279,6 @@ void moveBackwards(){
   
 }
 
-
-
 void stopMotors() {
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
@@ -301,15 +290,25 @@ void stopMotors() {
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
   if (blueCounter == 0){
-    turnRight(); 
-    moveBackwards(); 
-    delay(100); 
+    // move back
+    moveBackwards();
+    delay(1000);
+    stopMotors():
+    // turn right 45
+    turnRight();
+    delay(1350);
+    stopMotors();
+    // move into the box
     moveForward(); 
     delay(100); 
     stopMotors(); 
-    //check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
-    raise_claw();
-    turnLeft(); 
+    // grab ball
+    raiseClaw();
+    //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
+    //turn left 45
+    turnLeft();
+    delay(1350);
+    stopMotors();
     moveForward();  
     blueCounter++; 
   }
