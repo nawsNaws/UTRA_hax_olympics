@@ -1,0 +1,270 @@
+// Motor A (Left)
+// const int enA = 5; 
+// const int in1 = 6;
+// const int in2 = 7;
+
+// // Motor B (Right)
+// const int enB = 10;
+// const int in3 = 8;
+// const int in4 = 9;
+
+int robotState = 0; 
+// 0: Start, 1: Green Found, 2: On Ramp, 3: Finished
+
+//SERVOS: 
+#include <Servo.h>
+Servo myServo; //make servo obj
+int pos = 0;
+char incomingByte; // for incoming serial data, should be if the car has detected a item/obsticle
+
+//COLOUR SENSOR:
+#define s0 8
+#define s1 9
+#define s2 10
+#define s3 11
+#define out 12
+
+int data = 0; 
+int red = 0;
+int blue = 0;
+int green = 0;
+int colour = 0; //--> different colours rep different numbers
+int redCounter = 0; 
+int section = 0;
+
+
+int in1 = 0, in2 = 1;
+int in3 = A0, in4 = A1; 
+
+int ENA = 2;
+int ENB = 3;
+int wheelDirection = 0; 
+
+
+void setup() {
+  Serial.begin(9600);
+//CLAW:
+  myServo.attach(A2); // servo motor is pin 9
+  myServo.write(0); // set the start at angle 0
+  
+
+//COLOUR SENSOR:
+  pinMode(s0, OUTPUT);
+  pinMode(s1, OUTPUT);
+  pinMode(s2, OUTPUT);
+  pinMode(s3, OUTPUT);
+  pinMode(out, INPUT);
+
+  digitalWrite(s0, HIGH); 
+  digitalWrite(s1, HIGH);
+
+
+//MOTOR: 
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+
+}
+
+void getColours() {
+  //s2 low and s3 low signifies red 
+  digitalWrite(s2, LOW);
+  digitalWrite(s3, LOW);
+  red = pulseIn(out, digitalRead(out) == HIGH ? LOW : HIGH); 
+  delay(20);  
+  digitalWrite(s3, HIGH); // changes just s3 to high since s2 low and s3 high is blue 
+  blue = pulseIn(out, digitalRead(out) == HIGH ? LOW : HIGH); 
+  delay(20); 
+  digitalWrite(s2, HIGH);
+  green = pulseIn(out, digitalRead(out) == HIGH ? LOW : HIGH); 
+  delay(20); 
+}
+
+
+//WHEELS AND MOVEMENT OF VEHICLE
+void moveForward(){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+
+  analogWrite(ENA, 90);
+  analogWrite(ENB, 90);
+}
+
+void turnLeft(){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);// backwards is low high 
+
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+}
+
+void turnRight(){
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(ENA, 200);
+    analogWrite(ENB, 200);
+}
+
+void moveBackwards(){
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+  
+}
+
+void stopMotors() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+}
+
+
+void boxPickUp(){ 
+  //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
+  section = 1;
+  // move back
+  moveBackwards();
+  delay(1000);
+  stopMotors();
+  // turn right 45 ish
+  turnRight();
+  delay(1400);
+  moveForward();
+  delay(400);
+  stopMotors();
+  lowerClaw();
+  delay(100);
+  // move into the box
+  moveForward(); 
+  delay(300); 
+  stopMotors(); 
+  // grab ball
+  raiseClaw();
+  //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
+  // turn left 90
+  turnLeft();
+  delay(1400);
+  stopMotors();  
+}
+
+void boxLower(){
+  // turn left 90
+  turnLeft();
+  delay(1400);
+  stopMotors();  
+  //lower box
+  lowerClaw();
+  // move out of the box
+  moveBackwards(); 
+  delay(100); 
+  stopMotors();
+  raiseClaw();
+  delay(50);
+  moveForward(); 
+  delay(100); 
+  //turn right 90
+  turnRight();
+  delay(1300);
+  stopMotors();
+}
+
+//lowers the claw
+void lowerClaw() {
+  for (int angle = 0; angle <= 78; angle++) {
+    myServo.write(angle);
+    delay(15);
+  }
+} 
+
+//raises the claw
+void raiseClaw() {
+  for (int angle = 78; angle >= 0; angle--) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+  //then we reupload 
+
+void loop() {
+  switch (robotState) {
+    case 0: // Normal Black Track
+      moveForward();
+      delay(8000);
+      robotState = 1;
+      // turn right 45
+      turnRight();
+      delay(950);
+      stopMotors();
+      break;
+
+    case 1:
+      moveForward();
+      if (colour == 3){
+        boxPickUp();
+        boxLower();
+        robotState=2;
+      }
+      break;
+    case 2: // Turning onto Green/Finding next Black
+      moveForward();
+      break;
+  }
+
+  getColours(); 
+  if (red<= 15 && green <= 15 && blue <= 15){ 
+    Serial.println("white"); 
+    colour = 1; 
+  } 
+  else if (red < blue && red <= green && red < 23){
+    Serial.println("red"); 
+    colour = 2; 
+  }else if (blue < green && blue < red && blue < 34){
+    Serial.println("blue"); 
+    colour = 3; 
+    boxPickUp(); 
+    boxLower();
+  } else if (green < red  && green - blue <= 8){
+    Serial.println("green"); 
+    colour = 4; 
+  }else{
+    Serial.println("other"); 
+    colour = 5; 
+  }
+  delay (2000); 
+
+  //CLAW:
+  if (Serial.available()) { 
+    // if a signal is sent to lower or raise the claw
+    incomingByte = Serial.read(); // get the data
+
+    if (incomingByte == '1' && pos == 0) { // if the claw is up
+      lowerClaw(); //lower the claw
+      pos = 1; // claw is now in a lowered position
+    }
+  }else if (incomingByte == '0' && pos == 1) {
+      raiseClaw(); //raise the claw
+      pos = 0; // claw is now in a raised position
+  }
+  }
+  
