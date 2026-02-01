@@ -29,7 +29,7 @@ int green = 0;
 int colour = 0; //--> different colours rep different numbers
 int blueCounter = 0; 
 int redCounter = 0; 
-int section = 0
+int section = 0;
 
 
 int in1 = 0, in2 = 1;
@@ -98,117 +98,6 @@ void setup() {
   pinMode(ENA, OUTPUT);
   pinMode(ENB, OUTPUT);
 
-}
-
-void loop() {
-  //IR SENSORS: 
-  digitalWrite(leftIR,HIGH);
-  digitalWrite(rightIR,HIGH);
-  int leftState = digitalRead(leftIR);
-  int rightState = digitalRead(rightIR);
-
-  if (leftState == LOW && rightState == LOW) {
-    // moveForward();
-    Serial.println("forwards");
-    if section == 1:
-      //if robot is on black square of target
-      if colour==5:
-        stopMotors();
-    else:
-      moveForward(); 
-  } 
-    //if the colour is not green and the right IR sensor is sensing
-  else if (colour!=4 && leftState == LOW && rightState == HIGH) {
-    //turnRight();
-    Serial.println("right");
-    turnRight(); 
-  } 
-  else if (leftState == HIGH && rightState == LOW) {
-    //turnRight();
-    Serial.println("left");
-    turnLeft(); 
-  } 
-  // RIGHT SIDE
-  else{
-    //FIRST UPLOAD! TURN RIGHT TO GREEN TRACK AT Y
-    turnRight();
-  }
-
-  //COLOURS
-  getColours(); 
-  if (red<= 15 && green <= 15 && blue <= 15){ 
-    Serial.println("white"); 
-    colour = 1; 
-  } 
-  else if (red < blue && red <= green && red < 23){
-    Serial.println("red"); 
-    redRoad(); 
-    colour = 2; 
-  }
-  else if (blue < green && blue < red && blue < 20){
-    Serial.println("blue"); 
-    colour = 3; 
-    boxPickUp(); 
-    boxLower();
-    if (blueCounter = 2){
-      blueCounter++; 
-    }
-  } 
-  else if (green < red  && green - blue <= 8){
-    Serial.println("green"); 
-    colour = 4; 
-    }
-  else {
-    Serial.println("other"); 
-    colour = 5; 
-  }
-  delay (2000); 
-  if colour == 3{
-    boxPickUp()
-    boxLower()
-  }
-
-//ULTRASONIC SENSOR: 
-  long duration;
-  float distanceCm
-  // Clear the trigger pin
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  // Send a 10µs HIGH pulse to trigger the sensor
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // Read the echo pin (timeout after 25ms = ~4 meters)
-  duration = pulseIn(echoPin, HIGH, 25000UL);
-  // If no echo is received (timeout), skip calculation
-  if (duration == 0) {
-    Serial.println("Out of range or no object detected");
-  } else {
-    // Calculate distance in cm
-    distanceCm = (duration * SOUND_SPEED) / 2.0;
-    // Display results rounded to 2 decimal points
-    Serial.println(distanceCm, 2);
-  }
-  // Evades object if less than 20cm away
-  if (distanceCm<20){
-    evadeObstacle(); 
-  delay(500); // Wait before next measurement
-  }
-
-  //CLAW:
-  if (Serial.available()) { // if a signal is sent to lower or raise the claw
-    incomingByte = Serial.read(); // get the data
-
-    if (incomingByte == '1' && pos == 0) { // if the claw is up
-      lower_claw(); //lower the claw
-      pos = 1; // claw is now in a lowered position
-    }
-  }
-
-    else if (incomingByte == '0' && pos == 1) {
-      raise_claw(); //raise the claw
-      pos = 0; // claw is now in a raised position
-    }
 }
 
 void getColours() {
@@ -282,12 +171,12 @@ void stopMotors() {
 
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
-  section = 1
+  section = 1;
   if (blueCounter == 0){
     // move back
     moveBackwards();
     delay(1000);
-    stopMotors():
+    stopMotors();
     // turn right 90
     turnRight();
     delay(2700);
@@ -330,7 +219,7 @@ void boxLower(){
 }
 
 //lowers the claw
-void lower_claw() {
+void lowerClaw() {
   for (int angle = 0; angle <= 90; angle++) {
     myServo.write(angle);
     delay(15);
@@ -338,14 +227,116 @@ void lower_claw() {
 } 
 
 //raises the claw
-void raise_claw() {
+void raiseClaw() {
   for (int angle = 90; angle >= 0; angle--) {
     myServo.write(angle);
     delay(15);
   }
 }
-
-    moveBackwards();
   //then we reupload 
 
+void loop() {
+  //IR SENSORS: 
+  digitalWrite(leftIR,HIGH);
+  digitalWrite(rightIR,HIGH);
+  int leftState = digitalRead(leftIR);
+  int rightState = digitalRead(rightIR);
 
+  if (leftState == LOW && rightState == LOW) {
+    // moveForward();
+    Serial.println("forwards");
+    if (section == 1){
+      //if robot is on black square of target
+      if colour==5{
+        stopMotors();
+      }else{
+        moveForward(); 
+      }
+    }
+  }else if (colour!=4 && leftState == LOW && rightState == HIGH) {
+    //if the colour is not green and the right IR sensor is sensing
+    //turnRight();
+    Serial.println("right");
+    turnRight(); 
+    
+  } else if (leftState == HIGH && rightState == LOW) {
+    //turnRight();
+    Serial.println("left");
+    turnLeft(); 
+  } else {
+    //FIRST UPLOAD! TURN RIGHT TO GREEN TRACK AT Y
+    turnRight();
+  }
+
+  //COLOURS
+  getColours(); 
+  if (red<= 15 && green <= 15 && blue <= 15){ 
+    Serial.println("white"); 
+    colour = 1; 
+  } 
+  else if (red < blue && red <= green && red < 23){
+    Serial.println("red"); 
+    redRoad(); 
+    colour = 2; 
+  }else if (blue < green && blue < red && blue < 20){
+    Serial.println("blue"); 
+    colour = 3; 
+    boxPickUp(); 
+    boxLower();
+    if (blueCounter = 2){
+      blueCounter++; 
+    }
+  } else if (green < red  && green - blue <= 8){
+    Serial.println("green"); 
+    colour = 4; 
+  }else{
+    Serial.println("other"); 
+    colour = 5; 
+  }
+  delay (2000); 
+  if (colour == 3){
+    boxPickUp()
+    boxLower()
+  }
+
+//ULTRASONIC SENSOR: 
+  long duration;
+  float distanceCm;
+  // Clear the trigger pin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Send a 10µs HIGH pulse to trigger the sensor
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Read the echo pin (timeout after 25ms = ~4 meters)
+  duration = pulseIn(echoPin, HIGH, 25000UL);
+  // If no echo is received (timeout), skip calculation
+  if (duration == 0) {
+    Serial.println("Out of range or no object detected");
+  } else {
+    // Calculate distance in cm
+    distanceCm = (duration * SOUND_SPEED) / 2.0;
+    // Display results rounded to 2 decimal points
+    Serial.println(distanceCm, 2);
+  }
+  // Evades object if less than 20cm away
+  if (distanceCm<20){
+    evadeObstacle(); 
+    delay(500); // Wait before next measurement
+  }
+
+  //CLAW:
+  if (Serial.available()) { 
+    // if a signal is sent to lower or raise the claw
+    incomingByte = Serial.read(); // get the data
+
+    if (incomingByte == '1' && pos == 0) { // if the claw is up
+      lower_claw(); //lower the claw
+      pos = 1; // claw is now in a lowered position
+    }
+  }else if (incomingByte == '0' && pos == 1) {
+      raise_claw(); //raise the claw
+      pos = 0; // claw is now in a raised position
+  }
+  }
