@@ -27,7 +27,6 @@ int red = 0;
 int blue = 0;
 int green = 0;
 int colour = 0; //--> different colours rep different numbers
-int blueCounter = 0; 
 int redCounter = 0; 
 int section = 0;
 
@@ -170,52 +169,45 @@ void stopMotors() {
 }
 
 
-void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
+void boxPickUp(){ 
+  //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
   section = 1;
-  if (blueCounter == 0){
-    // move back
-    moveBackwards();
-    delay(1000);
-    stopMotors();
-    // turn right 90
-    turnRight();
-    delay(2700);
-    stopMotors();
-    // move into the box
-    moveForward(); 
-    delay(100); 
-    stopMotors(); 
-    // grab ball
-    raiseClaw();
-    //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
-    // turn left 90
-    turnLeft();
-    delay(2700);
-    stopMotors();  
-    blueCounter++; 
-  }
+  // move back
+  moveBackwards();
+  delay(1000);
+  stopMotors();
+  // turn right 90
+  turnRight();
+  delay(2700);
+  stopMotors();
+  // move into the box
+  moveForward(); 
+  delay(100); 
+  stopMotors(); 
+  // grab ball
+  raiseClaw();
+  //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
+  // turn left 90
+  turnLeft();
+  delay(2700);
+  stopMotors();  
 }
 
 void boxLower(){
-  if (blueCounter == 1){
-    // turn left 90
-    turnLeft();
-    delay(2700);
-    stopMotors();  
-    //lower box
-    lowerClaw();
-    // move out of the box
-    moveBackwards(); 
-    delay(100); 
-    stopMotors();
-    //turn right 90
-    turnRight()
-    delay(2700);
-    stopMotors();
-    //test if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
-    blueCounter++;
-  }
-
+  // turn left 90
+  turnLeft();
+  delay(2700);
+  stopMotors();  
+  //lower box
+  lowerClaw();
+  // move out of the box
+  moveBackwards(); 
+  delay(100); 
+  stopMotors();
+  //turn right 90
+  turnRight();
+  delay(2700);
+  stopMotors();
 }
 
 //lowers the claw
@@ -247,7 +239,7 @@ void loop() {
     Serial.println("forwards");
     if (section == 1){
       //if robot is on black square of target
-      if colour==5{
+      if (colour==5){
         stopMotors();
       }else{
         moveForward(); 
@@ -276,16 +268,12 @@ void loop() {
   } 
   else if (red < blue && red <= green && red < 23){
     Serial.println("red"); 
-    redRoad(); 
     colour = 2; 
   }else if (blue < green && blue < red && blue < 20){
     Serial.println("blue"); 
     colour = 3; 
     boxPickUp(); 
     boxLower();
-    if (blueCounter = 2){
-      blueCounter++; 
-    }
   } else if (green < red  && green - blue <= 8){
     Serial.println("green"); 
     colour = 4; 
@@ -295,8 +283,8 @@ void loop() {
   }
   delay (2000); 
   if (colour == 3){
-    boxPickUp()
-    boxLower()
+    boxPickUp();
+    boxLower();
   }
 
 //ULTRASONIC SENSOR: 
@@ -320,11 +308,6 @@ void loop() {
     // Display results rounded to 2 decimal points
     Serial.println(distanceCm, 2);
   }
-  // Evades object if less than 20cm away
-  if (distanceCm<20){
-    evadeObstacle(); 
-    delay(500); // Wait before next measurement
-  }
 
   //CLAW:
   if (Serial.available()) { 
@@ -332,11 +315,11 @@ void loop() {
     incomingByte = Serial.read(); // get the data
 
     if (incomingByte == '1' && pos == 0) { // if the claw is up
-      lower_claw(); //lower the claw
+      lowerClaw(); //lower the claw
       pos = 1; // claw is now in a lowered position
     }
   }else if (incomingByte == '0' && pos == 1) {
-      raise_claw(); //raise the claw
+      raiseClaw(); //raise the claw
       pos = 0; // claw is now in a raised position
   }
   }
