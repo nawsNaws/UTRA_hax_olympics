@@ -163,7 +163,10 @@ void loop() {
     colour = 5; 
   }
   delay (2000); 
-
+  if colour == 3{
+    boxPickUp()
+    boxLower()
+  }
 
 //ULTRASONIC SENSOR: 
   long duration;
