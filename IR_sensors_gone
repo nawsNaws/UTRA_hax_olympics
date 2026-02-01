@@ -210,21 +210,15 @@ void raiseClaw() {
   //then we reupload 
 
 void loop() {
-  //IR SENSORS: 
-  int leftState = digitalRead(leftIR);
-  int rightState = digitalRead(rightIR);
-
-  if (leftState == LOW && rightState == LOW) {
-    // moveForward();
-    Serial.println("forwards");
-    if (section == 1){
-      //if robot is on black square of target
-      if (colour==5){
-        stopMotors();
-      }else{
-        moveForward(); 
-      }
-    }
+  // moveForward();
+  Serial.println("forwards");
+  //if robot is on black square of target
+  if (colour==2){
+    stopMotors();
+  }else{
+    moveForward(); 
+  }
+}
   
 
   //COLOURS
