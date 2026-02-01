@@ -2,8 +2,8 @@
 // Measures distance in centimeters and inches
 
 // Pin configuration
-const int trigPin = 9;  // Trigger pin
-const int echoPin = 10; // Echo pin
+const int trigPin = 5;  // Trigger pin
+const int echoPin = 4; // Echo pin
 const int lightPin = 8; // LED pin
 
 // Speed of sound in cm/µs
