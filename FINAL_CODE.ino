@@ -1,3 +1,39 @@
+// Motor A (Left)
+// const int enA = 5; 
+// const int in1 = 6;
+// const int in2 = 7;
+
+// // Motor B (Right)
+// const int enB = 10;
+// const int in3 = 8;
+// const int in4 = 9;
+
+
+//SERVOS: 
+#include <Servo.h>
+
+#define s0 8
+#define s1 9
+#define s2 10
+#define s3 11
+#define out 12
+
+int wheelDirection = 0; 
+int colour = 0; //--> different colours rep different numbers
+int blueCounter = 0; 
+
+int data = 0; 
+int red = 0;
+int blue = 0;
+int green = 0;
+
+int in1 = 0, in2 = 1;
+
+int in3 = A0, in4 = A1; 
+
+int ENA = 2;
+int ENB = 3;
+
 //ULTRASONIC SENSORS: 
 // Ultrasonic Sensor with Arduino
 // Measures distance in centimeters and inches
@@ -10,10 +46,6 @@ const int lightPin = 8; // LED pin
 // Speed of sound in cm/µs
 const float SOUND_SPEED = 0.0343; // cm per microsecond
 
-
-
-//SERVOS: 
-#include <Servo.h>
 
 // Ultrasonic Pins
 const int trigPin = 11;
@@ -38,40 +70,6 @@ int closedAngle = 145; // Adjust based on your grip test
 const int leftIR = 2;
 const int rightIR = 3;
 
-// Motor A (Left)
-// const int enA = 5; 
-// const int in1 = 6;
-// const int in2 = 7;
-
-// // Motor B (Right)
-// const int enB = 10;
-// const int in3 = 8;
-// const int in4 = 9;
-
-
-
-//COLOUR SENSOR: 
-#define s0 8
-#define s1 9
-#define s2 10
-#define s3 11
-#define out 12
-
-int data = 0; 
-int red = 0;
-int blue = 0;
-int green = 0;
-
-
-
-//MOTOR: 
-// Motor A
-int in1 = 0, in2 = 1;
-// Motor B
-int in3 = A0, in4 = A1;
-
-int ENA = 2;
-int ENB = 3;
 
 void setup() {
 //ULTRASONIC SENSOR:
@@ -126,12 +124,99 @@ void setup() {
   pinMode(ENB, OUTPUT);
 
   
+
   Serial.begin(9600);
 
 }
 
 void loop() {
-//ULTRASONIC SENSORS: 
+  //IR SENSORS: 
+  digitalWrite(leftIR,HIGH);
+  digitalWrite(rightIR,HIGH);
+  int leftState = digitalRead(leftIR);
+  int rightState = digitalRead(rightIR);
+
+  if (leftState == LOW && rightState == LOW) {
+    // moveForward();
+    Serial.println("forwards");
+    wheelDirection = 1; 
+  } 
+  else if (leftState == LOW && rightState == HIGH) {
+    //turnLeft();
+    Serial.println("right");
+    wheelDirection = 2;
+  } 
+  else if (leftState == HIGH && rightState == LOW) {
+    //turnRight();
+    Serial.println("left");
+    wheelDirection = 3; 
+  } 
+  
+  if (wheelDirection = 1){ //FORWARDS 
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);//forwards is high low 
+
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(ENA, 200);
+    analogWrite(ENB, 200);
+  }
+  
+  else if (wheelDirection = 2){ // RIGHT 
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);// backwards is low high 
+
+    analogWrite(ENA, 200);
+    analogWrite(ENB, 200);
+  }
+
+  else if (wheelDirection = 3){ //LEFT 
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(ENA, 200);
+    analogWrite(ENB, 200);
+  }
+
+  getColours(); 
+  
+  if (red<= 15 && green <= 15 && blue <= 15){ 
+    Serial.println("white"); 
+    colour = 1; 
+  } 
+
+  else if (red < blue && red <= green && red < 23){
+    Serial.println("red"); 
+    colour = 2; 
+  }
+
+  else if (blue < green && blue < red && blue < 20){
+    Serial.println("blue"); 
+    colour = 3; 
+  } 
+    
+  else if (green < red  && green - blue <= 8){
+    Serial.println("green"); 
+    colour = 4; 
+    }
+  
+  else {
+    Serial.println("other"); 
+    colour = 5; 
+  }
+  delay (2000); 
+
+  blueTape1(); 
+  blueTape2();    
+
+//ULTRASONIC SENSOR: 
   long duration;
   float distanceCm, distanceInch;
 
@@ -195,69 +280,6 @@ void loop() {
   
   delay(50); // Small delay to prevent sensor "noise"
 
-
-
-//IR SENSOR: 
-  digitalWrite(leftIR,HIGH);
-  digitalWrite(rightIR,HIGH);
-  int leftState = digitalRead(leftIR);
-  int rightState = digitalRead(rightIR);
-
-  // Note: LOW usually means "Line Detected" on many IR modules
-  // If yours is the opposite, just swap LOW for HIGH below.
-
-  if (leftState == LOW && rightState == LOW) {
-    // moveForward();
-    Serial.println("forwards");
-  } 
-  else if (leftState == LOW && rightState == HIGH) {
-    //turnLeft();
-    Serial.println("right");
-  } 
-  else if (leftState == HIGH && rightState == LOW) {
-    //turnRight();
-    Serial.println("left");
-  } 
-  else {
-    Serial.println("not gonna happen");
-   // stopMotors();
-  }
-
-
-
-//COLOUR SENSOR:
-getColours(); 
-  
-  if (red<= 15 && green <= 15 && blue <= 15){ 
-    Serial.println("white"); 
-  } 
-
-  else if (red < blue && red <= green && red < 23){
-    Serial.println("red"); 
-  }
-
-  else if (blue < green && blue < red && blue < 20){
-    Serial.println("blue"); 
-  } 
-    
-  else if (green < red  && green - blue <= 8){
-    Serial.println("green"); 
-    }
-  
-  else {
-    Serial.println("other"); 
-  }
-  delay (2000);    
-
-//MOTOR: 
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-
-  analogWrite(ENA, 200);
-  analogWrite(ENB, 200);
 }
 
 void getColours() {
@@ -292,6 +314,17 @@ void stopMotors() {
 void pickUpBox() {
   claw.write(closedAngle);
   delay(1000);
+}
+
+void blueTape1(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
+  if (colour = 3 && blueCounter = 0){
+
+
+  }
+}
+
+void blueTape2(){
+
 }
 
 
