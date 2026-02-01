@@ -12,20 +12,26 @@
 //SERVOS: 
 #include <Servo.h>
 
+Servo myServo; //make servo obj
+
+int pos = 0;
+
+char incomingByte; // for incoming serial data, should be if the car has detected a item/obsticle
+
+//COLOUR SENSOR:
 #define s0 8
 #define s1 9
 #define s2 10
 #define s3 11
 #define out 12
 
-int wheelDirection = 0; 
-int colour = 0; //--> different colours rep different numbers
-int blueCounter = 0; 
-
 int data = 0; 
 int red = 0;
 int blue = 0;
 int green = 0;
+int colour = 0; //--> different colours rep different numbers
+int blueCounter = 0; 
+
 
 int in1 = 0, in2 = 1;
 
@@ -33,6 +39,7 @@ int in3 = A0, in4 = A1;
 
 int ENA = 2;
 int ENB = 3;
+int wheelDirection = 0; 
 
 //ULTRASONIC SENSORS: 
 // Ultrasonic Sensor with Arduino
@@ -72,23 +79,21 @@ const int rightIR = 3;
 
 
 void setup() {
+  
+//CLAW:
+  myServo.attach(A2); // servo motor is pin 9
+  myServo.write(0); // set the start at angle 0
+
+  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+
+  
 //ULTRASONIC SENSOR:
 
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(lightPin, OUTPUT);
 
-//SERVOS: 
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  
-  pinMode(motorL1, OUTPUT);
-  pinMode(motorL2, OUTPUT);
-  pinMode(motorR1, OUTPUT);
-  pinMode(motorR2, OUTPUT);
 
-  claw.attach(clawPin);
-  claw.write(openAngle);
 
 //IR SENSORS: 
   pinMode(leftIR, INPUT);
@@ -139,51 +144,18 @@ void loop() {
   if (leftState == LOW && rightState == LOW) {
     // moveForward();
     Serial.println("forwards");
-    wheelDirection = 1; 
+    moveForward(); 
   } 
   else if (leftState == LOW && rightState == HIGH) {
     //turnLeft();
     Serial.println("right");
-    wheelDirection = 2;
+    turnRight(); 
   } 
   else if (leftState == HIGH && rightState == LOW) {
     //turnRight();
     Serial.println("left");
-    wheelDirection = 3; 
+    turnLeft(); 
   } 
-  
-  if (wheelDirection = 1){ //FORWARDS 
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);//forwards is high low 
-
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
-
-    analogWrite(ENA, 200);
-    analogWrite(ENB, 200);
-  }
-  
-  else if (wheelDirection = 2){ // RIGHT 
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
-
-    digitalWrite(in3, LOW);
-    digitalWrite(in4, HIGH);// backwards is low high 
-
-    analogWrite(ENA, 200);
-    analogWrite(ENB, 200);
-  }
-
-  else if (wheelDirection = 3){ //LEFT 
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-
-    digitalWrite(in3, HIGH);
-    digitalWrite(in4, LOW);
-
-    analogWrite(ENA, 200);
-    analogWrite(ENB, 200);
-  }
 
   getColours(); 
   
@@ -248,38 +220,22 @@ void loop() {
     //turn around the obstacle
   delay(500); // Wait before next measurement
 
+  //CLAW:
+
+   if (Serial.available()) { // if a signal is sent to lower or raise the claw
+    incomingByte = Serial.read(); // get the data
+
+    if (incomingByte == '1' && pos == 0) { // if the claw is up
+      lower_claw(); //lower the claw
+      pos = 1; // claw is now in a lowered position
+    }
 
 
-//SERVOS: 
-  long duration;
-  int distance;
-
-  // 1. Get Distance Reading
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-
-  duration = pulseIn(echoPin, HIGH);
-  distance = duration * 0.034 / 2; // Convert time to cm
-
-  Serial.print("Distance: ");
-  Serial.println(distance);
-
-  // 2. Logic: Drive until 15cm away
-  if (distance > 15 || distance == 0) { // '0' often means out of range
-    driveForward();
-  } 
-  else {
-    stopMotors();
-    delay(500);         // Let the robot settle
-    pickUpBox();
-    while(true);        // Stop everything after picking up
+    else if (incomingByte == '0' && pos == 1) {
+      raise_claw(); //raise the claw
+      pos = 0; // claw is now in a raised position
+    }
   }
-  
-  delay(50); // Small delay to prevent sensor "noise"
-
 }
 
 void getColours() {
@@ -302,7 +258,56 @@ void driveForward() {
   digitalWrite(motorL2, LOW);
   digitalWrite(motorR1, HIGH);
   digitalWrite(motorR2, LOW);
+
 }
+
+void moveForward(){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW;
+
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+
+}
+
+void turnRight(){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);// backwards is low high 
+
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+}
+
+void turnLeft(){
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+
+    analogWrite(ENA, 200);
+    analogWrite(ENB, 200);
+}
+
+void moveBackwards(){
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH;
+
+  analogWrite(ENA, 200);
+  analogWrite(ENB, 200);
+  
+}
+
+
 
 void stopMotors() {
   digitalWrite(motorL1, LOW);
@@ -318,6 +323,11 @@ void pickUpBox() {
 
 void blueTape1(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
   if (colour = 3 && blueCounter = 0){
+    turnRight(); 
+    moveBackwards(); 
+    delay(100); 
+    moveForward(); 
+
 
 
   }
@@ -326,5 +336,30 @@ void blueTape1(){ //set int counter to 0 at beginning --> once this code works i
 void blueTape2(){
 
 }
+
+//turn right 
+//potentially move back a bit 
+//collect box 
+
+//lowers the claw
+void lower_claw() {
+  for (int angle = 0; angle <= 90; angle++) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+
+//raises the claw
+void raise_claw() {
+  for (int angle = 90; angle >= 0; angle--) {
+    myServo.write(angle);
+    delay(15);
+  }
+}
+
+
+
+
+
 
 
