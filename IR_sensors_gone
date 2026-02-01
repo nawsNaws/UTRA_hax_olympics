@@ -211,15 +211,22 @@ void raiseClaw() {
 
 void loop() {
   // moveForward();
-  Serial.println("forwards");
-  //if robot is on black square of target
-  if (colour==2){
+  if (colour != 5){
+    //turn right 45
+    turnRight();
+    delay(1350);
     stopMotors();
-  }else{
-    moveForward(); 
   }
-}
-  
+  if (colour == 5){
+    //black
+    moveForward();
+  }
+
+  if (colour==2){
+    //red
+    delay(1000)
+    stopMotors();
+  }
 
   //COLOURS
   getColours(); 
