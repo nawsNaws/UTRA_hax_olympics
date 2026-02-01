@@ -1,10 +1,9 @@
 // Ultrasonic Sensor with Arduino
-// Measures distance in centimeters and inches
+// Measures distance in centimeters
 
 // Pin configuration
 const int trigPin = 5;  // Trigger pin
 const int echoPin = 4; // Echo pin
-const int lightPin = 8; // LED pin
 
 // Speed of sound in cm/µs
 const float SOUND_SPEED = 0.0343; // cm per microsecond
@@ -13,7 +12,6 @@ void setup() {
   Serial.begin(9600); // Start serial communication
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-  pinMode(lightPin, OUTPUT);
 }
 
 void loop() {
