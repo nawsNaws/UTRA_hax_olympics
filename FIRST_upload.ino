@@ -11,11 +11,8 @@
 
 //SERVOS: 
 #include <Servo.h>
-
 Servo myServo; //make servo obj
-
 int pos = 0;
-
 char incomingByte; // for incoming serial data, should be if the car has detected a item/obsticle
 
 //COLOUR SENSOR:
@@ -32,27 +29,23 @@ int green = 0;
 int colour = 0; //--> different colours rep different numbers
 int blueCounter = 0; 
 int redCounter = 0; 
+int section = "green1"
 
 
 int in1 = 0, in2 = 1;
-
 int in3 = A0, in4 = A1; 
 
 int ENA = 2;
 int ENB = 3;
 int wheelDirection = 0; 
 
-//ULTRASONIC SENSORS: 
-// Ultrasonic Sensor with Arduino
-// Measures distance in centimeters and inches
-
+//ULTRASONIC SENSOR: 
+// measures distance in cm
 // Pin configuration
 const int trigPin = 5;  // Trigger pin
 const int echoPin = 4; // Echo pin
-
 // Speed of sound in cm/µs
 const float SOUND_SPEED = 0.0343; // cm per microsecond
-
 
 
 //IR SENSORS: 
@@ -62,19 +55,15 @@ const int rightIR = 3;
 
 
 void setup() {
-  
+  Serial.begin(9600);
 //CLAW:
   myServo.attach(A2); // servo motor is pin 9
   myServo.write(0); // set the start at angle 0
 
   
-  
 //ULTRASONIC SENSOR:
-
-  
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
-
 
 
 //IR SENSORS: 
@@ -87,8 +76,7 @@ void setup() {
   // pinMode(enB, OUTPUT);
   // pinMode(in3, OUTPUT);
   // pinMode(in4, OUTPUT);
-
-
+  
 
 //COLOUR SENSOR:
   pinMode(s0, OUTPUT);
@@ -96,7 +84,7 @@ void setup() {
   pinMode(s2, OUTPUT);
   pinMode(s3, OUTPUT);
   pinMode(out, INPUT);
-  
+
   digitalWrite(s0, HIGH); 
   digitalWrite(s1, HIGH);
 
@@ -109,10 +97,6 @@ void setup() {
 
   pinMode(ENA, OUTPUT);
   pinMode(ENB, OUTPUT);
-
-  
-
-  Serial.begin(9600);
 
 }
 
@@ -290,6 +274,7 @@ void stopMotors() {
 
 
 void boxPickUp(){ //set int counter to 0 at beginning --> once this code works increase by 1 then blue tape 2 works if tape is blue and counter = 1 
+  section = "green2"
   if (blueCounter == 0){
     // move back
     moveBackwards();
@@ -350,18 +335,6 @@ void raise_claw() {
     myServo.write(angle);
     delay(15);
   }
-}
-
-void redRoad(){
-  if (redCounter = 0){
-    turnRight(); //its not a complete right angle from the green road to the red one tho so subject to change 
-    redCounter = 1; 
-  }
-  moveForward(); 
-}
-
-void evadeObstacle(){
-  turnLeft(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
 }
 
 void find_ball_and_wall(){
