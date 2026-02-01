@@ -204,7 +204,7 @@ void loop() {
 
   // Turn on LED if object is less than 20cm away
   if (distanceCm<20){
-    //turn around the obstacle
+    evadeObstacle(); 
   delay(500); // Wait before next measurement
   }
   
@@ -340,7 +340,7 @@ void lower_claw() {
     myServo.write(angle);
     delay(15);
   }
-}
+} 
 
 //raises the claw
 void raise_claw() {
@@ -356,6 +356,12 @@ void redRoad(){
     redCounter = 1; 
   }
   moveForward(); 
+}
+
+void evadeObstacle(){
+  turnRight(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
+  
+
 }
 
 
