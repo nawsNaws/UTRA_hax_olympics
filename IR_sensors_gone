@@ -40,25 +40,12 @@ int ENA = 2;
 int ENB = 3;
 int wheelDirection = 0; 
 
-//ULTRASONIC SENSOR: 
-// measures distance in cm
-// Pin configuration
-const int trigPin = 5;  // Trigger pin
-const int echoPin = 4; // Echo pin
-// Speed of sound in cm/µs
-const float SOUND_SPEED = 0.0343; // cm per microsecond
-
 
 void setup() {
   Serial.begin(9600);
 //CLAW:
   myServo.attach(A2); // servo motor is pin 9
   myServo.write(0); // set the start at angle 0
-
-  
-//ULTRASONIC SENSOR:
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
   
 
 //COLOUR SENSOR:
@@ -110,7 +97,7 @@ void moveForward(){
   analogWrite(ENB, 200);
 }
 
-void turnRight(){
+void turnLeft(){
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
 
@@ -121,7 +108,7 @@ void turnRight(){
   analogWrite(ENB, 200);
 }
 
-void turnLeft(){
+void turnRight(){
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
 
@@ -162,8 +149,9 @@ void boxPickUp(){
   stopMotors();
   // turn right 90
   turnRight();
-  delay(2700);
+  delay(1400);
   stopMotors();
+  lowerClaw();
   // move into the box
   moveForward(); 
   delay(100); 
@@ -173,20 +161,21 @@ void boxPickUp(){
   //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
   // turn left 90
   turnLeft();
-  delay(2700);
+  delay(1400);
   stopMotors();  
 }
 
 void boxLower(){
   // turn left 90
   turnLeft();
-  delay(2700);
+  delay(1400);
   stopMotors();  
   //lower box
   lowerClaw();
   // move out of the box
   moveBackwards(); 
-  delay(100); 
+  delay(50); 
+  raiseClaw();
   stopMotors();
   //turn right 90
   turnRight();
@@ -215,8 +204,9 @@ void loop() {
 
   switch (robotState) {
     case 0: // Normal Black Track
-      moveForwards();
-      if (color == 2) { // Green detected
+      moveForward();
+      if (colour == 2) { 
+        // Green detected
         robotState = 1;
          // turn right 45
         turnRight();
@@ -226,14 +216,16 @@ void loop() {
       break;
 
     case 1: // Turning onto Green/Finding next Black
-      moveForwards());
-      if (color == 5):
+      moveForward();
+      if (colour == 5){
         robotState = 3; 
+      }
       break;
 
     case 2: // On Ramp
-      moveForwards(); 
-      if (color == 2) { // Red detected
+      moveForward(); 
+      if (colour == 2) { 
+        // Red detected
         robotState = 3;
       }
       break;
@@ -244,8 +236,12 @@ void loop() {
       while(1); // Permanent stop
       break;
   }
-}
   // moveForward();
+    if (colour == 3){
+    boxPickUp();
+    boxLower();
+  }
+
   getColours(); 
   if (red<= 15 && green <= 15 && blue <= 15){ 
     Serial.println("white"); 
@@ -254,7 +250,7 @@ void loop() {
   else if (red < blue && red <= green && red < 23){
     Serial.println("red"); 
     colour = 2; 
-  }else if (blue < green && blue < red && blue < 30){
+  }else if (blue < green && blue < red && blue < 34){
     Serial.println("blue"); 
     colour = 3; 
     boxPickUp(); 
@@ -267,32 +263,6 @@ void loop() {
     colour = 5; 
   }
   delay (2000); 
-  if (colour == 3){
-    boxPickUp();
-    boxLower();
-  }
-
-//ULTRASONIC SENSOR: 
-  long duration;
-  float distanceCm;
-  // Clear the trigger pin
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  // Send a 10µs HIGH pulse to trigger the sensor
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // Read the echo pin (timeout after 25ms = ~4 meters)
-  duration = pulseIn(echoPin, HIGH, 25000UL);
-  // If no echo is received (timeout), skip calculation
-  if (duration == 0) {
-    Serial.println("Out of range or no object detected");
-  } else {
-    // Calculate distance in cm
-    distanceCm = (duration * SOUND_SPEED) / 2.0;
-    // Display results rounded to 2 decimal points
-    Serial.println(distanceCm, 2);
-  }
 
   //CLAW:
   if (Serial.available()) { 
@@ -309,14 +279,3 @@ void loop() {
   }
   }
   
-void find_ball_and_wall(){
-  // spins the robot to face the wall
-  while distanceCm<40 or distanceCm>50:
-    turnRight();
-  else:
-    stopMotors();
-
-  moveForward();
-  delay(1000);
-  //UPDATE WITH CORRECT TIME to push ball to correct space
-}
