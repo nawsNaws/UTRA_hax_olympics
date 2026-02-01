@@ -253,13 +253,6 @@ void getColours() {
   delay(20); 
 }
 
-void driveForward() {
-  digitalWrite(motorL1, HIGH);
-  digitalWrite(motorL2, LOW);
-  digitalWrite(motorR1, HIGH);
-  digitalWrite(motorR2, LOW);
-
-}
 
 void moveForward(){
   digitalWrite(in1, HIGH);
