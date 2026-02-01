@@ -128,8 +128,9 @@ void loop() {
     Serial.println("forwards");
     moveForward(); 
   } 
-  else if (leftState == LOW && rightState == HIGH) {
-    //turnLeft();
+    //if the colour is not green and the right IR sensor is sensing
+  else if (colour!=4 && leftState == LOW && rightState == HIGH) {
+    //turnRight();
     Serial.println("right");
     turnRight(); 
   } 
