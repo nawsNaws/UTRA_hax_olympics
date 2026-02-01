@@ -294,9 +294,9 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
     moveBackwards();
     delay(1000);
     stopMotors():
-    // turn right 45
+    // turn right 90
     turnRight();
-    delay(1350);
+    delay(2700);
     stopMotors();
     // move into the box
     moveForward(); 
@@ -305,11 +305,10 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
     // grab ball
     raiseClaw();
     //!check if spacing is correct (i.e. arm is in box) if not move forwards/backwards as much as needed 
-    //turn left 45
+    // turn left 90
     turnLeft();
-    delay(1350);
-    stopMotors();
-    moveForward();  
+    delay(2700);
+    stopMotors();  
     blueCounter++; 
   }
 }
