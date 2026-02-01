@@ -32,7 +32,7 @@ int green = 0;
 int colour = 0; //--> different colours rep different numbers
 int blueCounter = 0; 
 int redCounter = 0; 
-
+section=="red1"
 
 int in1 = 0, in2 = 1;
 
@@ -178,10 +178,12 @@ void loop() {
   if colour == 5{
     find_ball_and_wall()
   }
-  // if the colour is blue, pick up ball
+  // if the colour is blue, pick up ball or put it down
   if colour == 3{
-    boxPickUp()
-    boxLower()
+    if section=="red1"{
+      boxPickUp();
+    } else {
+      boxLower();
   }
 
 //ULTRASONIC SENSOR: 
@@ -317,7 +319,7 @@ void boxPickUp(){ //set int counter to 0 at beginning --> once this code works i
     turnLeft();
     delay(2700);
     stopMotors();  
-    blueCounter++; 
+    section=="red2"
   }
 }
 
@@ -358,16 +360,31 @@ void raise_claw() {
   }
 }
 
-void redRoad(){
-  if (redCounter = 0){
-    turnRight(); //its not a complete right angle from the green road to the red one tho so subject to change 
-    redCounter = 1; 
-  }
-  moveForward(); 
-}
-
 void evadeObstacle(){
-  turnLeft(); //figure out the delay necessary for a 45 degree turn vs a 90 degree one (this one should be 90)
+  // turn around obstacle 90 degreees
+    turnLeft();
+    delay(2700);
+    stopMotors();  
+    //move forwards
+    moveForwards();
+    delay(3000)
+    stopMotors();
+    // turn right 90 defrees
+    turnRight();
+    delay(2700);
+    stopMotors(); 
+    //move forwards
+    moveForwards();
+    delay(3000)
+    stopMotors();
+    //turn right 90
+    turnRight()
+    delay(2700);
+    stopMotors();
+    //move forwards
+    moveForwards();
+    delay(3000)
+    stopMotors();
 }
 
 void find_ball_and_wall(){
